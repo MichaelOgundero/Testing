@@ -21,7 +21,7 @@ public class TEST {
 	        // Execute the method.
 	        int statusCode = client.executeMethod(post);
 	        Assert.assertEquals(expectedStatusCode, statusCode);
-	        System.out.println("POST method succeed");
+	        System.out.println("succeeded");
 
 	      } catch (HttpException e) {
 	        System.err.println(" protocol violation: " + e.getMessage());
