@@ -5,7 +5,7 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.junit.*;
 import java.io.*;
 public class TEST {
-	 private static String url = "";
+	 private static String url = "https://lobbyservice-dot-training-project-lab.appspot.com/NewGameLobby";
   
 	public static boolean POST(String route, NameValuePair[] data,int expectedStatusCode)
 	{	boolean result = false ;
@@ -16,7 +16,8 @@ public class TEST {
 	    // Provide custom retry handler is necessary
 	    client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
 	    		  new DefaultHttpMethodRetryHandler());
-	    post.addParameters(data);
+	    post.setQueryString(data);
+	   // post.addParameters(data);
         // Execute the method.
         try {
 			int statusCode = client.executeMethod(post);
@@ -25,10 +26,12 @@ public class TEST {
 			
 		} catch (HttpException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			return result;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			return result;
 		}
         finally {
 	       post.releaseConnection();
@@ -36,7 +39,7 @@ public class TEST {
 		return result;
 	}
 	@SuppressWarnings("deprecation")
-	public static boolean PUT(String route, String  data,int expectedStatusCode)
+	public static boolean PUT(String route, NameValuePair[]  data,int expectedStatusCode)
 	{	boolean result = false ;
 		// Create an instance of HttpClient.
 	    HttpClient client = new HttpClient();
@@ -45,13 +48,7 @@ public class TEST {
 	    		  new DefaultHttpMethodRetryHandler());
 	    // Create a method instance.
 	    PutMethod put = new PutMethod(url+route);
-	    try {
-			put.setRequestEntity(new StringRequestEntity(data,
-			        "application/json","UTF-8"));
-		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	    put.setQueryString(data);
 	
 	    try {
 	        // Execute the method.
@@ -71,9 +68,10 @@ public class TEST {
 	        }
 	    return result;
 	}
-	public static boolean  Get(String route,int expectedStatusCode)
+	public static boolean Get(String route,int expectedStatusCode)
 	
 	{	boolean result = false ;
+	 
 		// Create an instance of HttpClient.
 	    HttpClient client = new HttpClient();
 	    // Create a method instance.
@@ -99,8 +97,6 @@ public class TEST {
 	        }
 	    return result;
 	}
-	
-	
 	public static boolean DELETE(String route,int expectedStatusCode) throws Exception {
 			boolean result = false ;
 		  HttpClient client=new HttpClient();
@@ -124,13 +120,18 @@ public class TEST {
 			       method.releaseConnection();
 		        }
 		    return result;
-		  //if (status == 404)   throw new IllegalArgumentException("Dataset does not exist.");
-		 // if (status == 503)   throw new IllegalStateException("Service error: " + status);
+		   //if (status == 404)   throw new IllegalArgumentException("Dataset does not exist.");
+		  // if (status == 503)   throw new IllegalStateException("Service error: " + status);
 		}
 	
-  public static void main(String[] args) {
-	  //exemple
-	 System.out.println(Get("https://20181102t154318-dot-training-project-lab.appspot.com/?fbclid=IwAR2BNcantGQsRYCmG-0DjnLjY7J8m_7hXJQ02K-yem_R7_QVNDXekPUYmpY",400)); 
-
+  public static void main(String[] args) throws Exception {
+	 //	 System.out.println(Get("https://20181102t154318-dot-training-project-lab.appspot.com/?fbclid=IwAR2BNcantGQsRYCmG-0DjnLjY7J8m_7hXJQ02K-yem_R7_QVNDXekPUYmpY",400)); 
+	//Scenario 1:
+	NameValuePair [] User1= { new NameValuePair("playerNumber","2"), new NameValuePair("userName", "mahdi")};  
+    System.out.println("New game lobby : "+ POST("",User1,400));
+	//System.out.println("hello  "+POST("",User1,201));
+	//System.out.println(DELETE("",200));
+	// System.out.println(Get("'",200));
+	   
   }
 }
