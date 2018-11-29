@@ -13,36 +13,41 @@ import java.util.List;
 import java.util.Scanner;
 
 public class TEST {
-	private static String url = "https://webhook.site/b3ede3ed-e77c-4730-be61-e820f51e844b";
+	private static String url = "https://training-project-lab.appspot.com/";
 
-	public static String Log_in(String route, NameValuePair[] data, int expectedStatusCode)
+	public static String Log_in_SignUp(String route, NameValuePair[] data)
 			throws JSONException, IOException {
-		// boolean result = false ;
 		// Create an instance of HttpClient.
 		HttpClient client = new HttpClient();
 		// Create a method instance.
-		PostMethod post = new PostMethod("https://security-dot-training-project-lab.appspot.com/" + route);
+		PostMethod post = new PostMethod(url+ route);
 		// Provide custom retry handler is necessary
 		client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
 		post.setQueryString(data);
 		try {
 			int statusCode = client.executeMethod(post);
-			System.out.println("Expected=" + expectedStatusCode + " Status code :" + statusCode);
+			System.out.println("Expected=" + 200 + " Status code :" + statusCode);
 			// Read the response body.
+			if(statusCode==200) {
 			String responseBody = post.getResponseBodyAsString();
 			// System.out.println(responseBody);
 			JSONObject object = new JSONObject(responseBody);
 			String loc = object.getString("token");
-			// System.out.println(loc);
+			System.out.println(route +" : succeeded");
 			return loc;
+			}
+			else 
+			return null;
 		} catch (HttpException e) {
 			// TODO Auto-generated catch block
 			// e.printStackTrace();
 			System.out.println(post.getResponseBodyAsString());
+			System.out.println(route +" : Failed");
 			return null;
 
 		} catch (IOException e) {
 			System.out.println(post.getResponseBodyAsString());
+			System.out.println(route +" : Failed");
 			// TODO Auto-generated catch block
 			// e.printStackTrace();
 			return null;
@@ -51,7 +56,7 @@ public class TEST {
 		}
 	}
 
-	public static String GetGameID(String Token) throws JSONException {// Create an instance of HttpClient.
+	public static String GetGameID(NameValuePair[] Token) throws JSONException {// Create an instance of HttpClient.
 		HttpClient client = new HttpClient();
 		// Create a method instance.
 		GetMethod method = new GetMethod("https://training-project-lab.appspot.com/GetGameList");
@@ -88,17 +93,17 @@ public class TEST {
 		return null;
 	}
 
-	public static boolean POST(String route, NameValuePair[] data, String Token, int expectedStatusCode) {
+	public static boolean POST(String route, NameValuePair[] data, String Token) {
 		boolean result = false;
 		// Create an instance of HttpClient.
 		HttpClient client = new HttpClient();
 		// Create a method instance.
-		PostMethod post = new PostMethod(route);
+		PostMethod post = new PostMethod(url+route);
 		// Provide custom retry handler is necessary
 		client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
-		// post.setQueryString(data);
+        post.setQueryString(data);
 		// post.addParameters(data);
-		post.setRequestBody(data);
+	 //	post.setRequestBody(data);
 		// post.setRequestEntity(new StringRequestEntity(data,
 		// "application/json","UTF-8"));
 		// Bearer
@@ -106,16 +111,19 @@ public class TEST {
 		// Execute the method.
 		try {
 			int statusCode = client.executeMethod(post);
-			System.out.println("Expected=" + expectedStatusCode + " Status code :" + statusCode);
-			if (statusCode == expectedStatusCode)
+			System.out.println("Expected=" + 200 + " Status code :" + statusCode);
+			if (statusCode == 200)
+				System.out.println(route+ " : succeed");
 				result = true;
 		} catch (HttpException e) {
 			// TODO Auto-generated catch block
 			// e.printStackTrace();
+			System.out.println(route+ " : failed");
 			return result;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			// e.printStackTrace();
+			System.out.println(route+ " : failed");
 			return result;
 		} finally {
 			post.releaseConnection();
@@ -124,14 +132,14 @@ public class TEST {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static boolean PUT(String route, NameValuePair[] data, String Token, int expectedStatusCode) {
+	public static boolean PUT(String route, NameValuePair[] data, String Token) {
 		boolean result = false;
 		// Create an instance of HttpClient.
 		HttpClient client = new HttpClient();
 		// Provide custom retry handler is necessary
 		client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
 		// Create a method instance.
-		PutMethod put = new PutMethod(route);
+		PutMethod put = new PutMethod(url+route);
 		put.setQueryString(data);
 		// put.setRequestBody(data);
 		// put.addParameters(data);
@@ -142,14 +150,21 @@ public class TEST {
 			// Execute the method.
 			int statusCode = client.executeMethod(put);
 			System.out.println("Status code :" + statusCode);
-			if (statusCode == expectedStatusCode)
+			if (statusCode == 200)
+				System.out.println(route+ " : succeed");
 				result = true;
 		} catch (HttpException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+//			e.printStackTrace();
+			
+			System.out.println(route+ " : failed");
+			return result;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.out.println(route+ " : failed");
+			return result;
+			
 		} finally {
 			put.releaseConnection();
 		}
@@ -164,7 +179,7 @@ public class TEST {
 		// Create an instance of HttpClient.
 		HttpClient client = new HttpClient();
 		// Create a method instance.
-		GetMethod method = new GetMethod(route);
+		GetMethod method = new GetMethod(url+route);
 		method.setQueryString(data);
 		method.setRequestHeader("Authorization", "Bearer " + Token);
 		// Provide custom retry handler is necessary
@@ -173,26 +188,32 @@ public class TEST {
 			// Execute the method.
 			int statusCode = client.executeMethod(method);
 			System.out.println("Status code :" + statusCode);
-			if (statusCode == expectedStatusCode)
-				result = true;
+			if (statusCode == 200)
+				System.out.println(route+ " : succeed");
+			result = true;
 
 		} catch (HttpException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.out.println(route+ " : failed");
+			return result;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+//			e.printStackTrace();
+			System.out.println(route+ " : failed");
+			return result;
+			
 		} finally {
 			method.releaseConnection();
 		}
 		return result;
 	}
 
-	public static boolean DELETE(String route, NameValuePair[] data, String Token, int expectedStatusCode)
+	public static boolean DELETE(String route, NameValuePair[] data, String Token)
 			throws Exception {
 		boolean result = false;
 		HttpClient client = new HttpClient();
-		DeleteMethod method = new DeleteMethod(route);
+		DeleteMethod method = new DeleteMethod(url+route);
 		// client.executeMethod(method);
 		/// int status=method.getStatusCode();
 		method.setRequestHeader("Authorization", "Bearer " + Token);
@@ -201,15 +222,20 @@ public class TEST {
 			// Execute the method.
 			int statusCode = client.executeMethod(method);
 			System.out.println("Status code :" + statusCode);
-			if (statusCode == expectedStatusCode)
-				result = true;
-
+			if (statusCode == 200)
+			{	result = true;
+			System.out.println(route+ " : succeed");}
+			
+			
 		} catch (HttpException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.out.println(route+ " : failed");
+			return result;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(route+ " : failed");
+			return result;
 		} finally {
 			method.releaseConnection();
 		}
@@ -224,7 +250,7 @@ public class TEST {
 			NameValuePair[] data) throws JSONException {
 		HttpClient client = new HttpClient();
 		// Create a method instance.
-		GetMethod method = new GetMethod("https://gameengine-dot-training-project-lab.appspot.com/" + route);
+		GetMethod method = new GetMethod(url+ route);
 
 		// Provide custom retry handler is necessary
 		client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
@@ -248,9 +274,12 @@ public class TEST {
 				for (int i = 0; i < array.length(); i++)
 					System.out.println("x= " + array.getJSONObject(i).getInt("xCoordinate") + " y = "
 							+ array.getJSONObject(i).getInt("yCoordinate"));
+				System.out.println(route+ " : succeed");
+
 				return array;
 				// https://stackoverflow.com/questions/1568762/accessing-members-of-items-in-a-jsonarray-with-java
 			} else
+				System.out.println(route+ " : failed");
 				return null;
 
 		} catch (HttpException e) {
@@ -273,7 +302,7 @@ public class TEST {
 		NameValuePair[] data = { new NameValuePair("username", Username) };
 		HttpClient client = new HttpClient();
 		// Create a method instance.
-		GetMethod method = new GetMethod("https://gameengine-dot-training-project-lab.appspot.com/get_state");
+		GetMethod method = new GetMethod(url+"get_state");
 		method.setQueryString(data);
 		// Provide custom retry handler is necessary
 		client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
@@ -320,7 +349,7 @@ public class TEST {
 		NameValuePair[] data = { new NameValuePair("username", Username) };
 		HttpClient client = new HttpClient();
 		// Create a method instance.
-		GetMethod method = new GetMethod("https://gameengine-dot-training-project-lab.appspot.com/get_state");
+		GetMethod method = new GetMethod(url+"get_state");
 		method.setQueryString(data);
 		// Provide custom retry handler is necessary
 		client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
@@ -370,86 +399,68 @@ public class TEST {
 
 		/* Authentication */
 
-		/*
-		 * System.out.println("Authentication"); String token_user1 ; String token_user2
-		 * ; NameValuePair [] User1= { new NameValuePair("name","mahdi"), new
-		 * NameValuePair("last_name","karray"), new
-		 * NameValuePair("email","karraymahdi"), new
-		 * NameValuePair("password","123456789")
-		 * 
-		 * }; NameValuePair [] User2= { new NameValuePair("name","houssam"), new
-		 * NameValuePair("last_name","mahdi"), new
-		 * NameValuePair("email","Houssam_mahdi"), new
-		 * NameValuePair("password","123456789")
-		 * 
-		 * }; NameValuePair [] Fake_User= {new
-		 * NameValuePair("email","Houssam_mahdi_98@gmail.com"), new
-		 * NameValuePair("password","987654321")};
-		 * 
-		 * token_user1=Log_in("signup",User1, 200);
-		 * System.out.println("sign_up user 1 (result should be 400) : "+
-		 * Log_in("signup",User1, 400)); token_user2=Log_in("signup",User2, 200);
-		 * System.out.println("sign_up user(result should be 400) :  "+
-		 * Log_in("signup",User2, 400)); NameValuePair [] TokenUser1= { new
-		 * NameValuePair("token",token_user1)}; NameValuePair [] TokenUser2= { new
-		 * NameValuePair("token",token_user2)}; System.out.println(POST(
-		 * "https://security-dot-training-project-lab.appspot.com/logout",TokenUser1,"",
-		 * 200)); System.out.println(POST(
-		 * "https://security-dot-training-project-lab.appspot.com/logout",TokenUser2,"",
-		 * 200)); token_user1=Log_in("login",User1, 200);
-		 * System.out.println("login_user1 (result should be 400) :  "+
-		 * Log_in("login",User1, 400)); token_user2=Log_in("login",User2, 200);
-		 * System.out.println("log_in user2 (result should be 400) :  "+
-		 * Log_in("login",User2, 400)); System.out.println("Fake User:  "+
-		 * Log_in("login",Fake_User, 400)); //System.out.println(token_user1);
-		 * //System.out.println(token_user2);
-		 * 
-		 * /*NameValuePair [] User1= { new
-		 * NameValuePair("email","Houssam_mahdi_98@hotmail.com"), new
-		 * NameValuePair("password","123456789") }; System.out.println(DELETE(
-		 * "https://security-dot-training-project-lab.appspot.com/deleteaccount",User1,
-		 * "",200));
-		 */
+		System.out.println("**********************************Authentication**************************************");
+		String token_user1;
+		String token_user2;
+		NameValuePair[] User1 = { new NameValuePair("name", "mahdi"), new NameValuePair("last_name", "karray"),
+				new NameValuePair("email", "karraymahdi"), new NameValuePair("password", "123456789")
+
+		};
+		NameValuePair[] User2 = { new NameValuePair("name", "houssam"), new NameValuePair("last_name", "mahdi"),
+				new NameValuePair("email", "Houssam_mahdi"), new NameValuePair("password", "123456789")
+		};
+		NameValuePair[] Fake_User = { new NameValuePair("email", "Houssam_mahdi_98@gmail.com"),
+				new NameValuePair("password", "987654321") };
+
+		
+		token_user1 = Log_in_SignUp("signup", User1);
+		token_user2 = Log_in_SignUp("signup", User2);
+		
+		
+		NameValuePair[] TokenUser1 = { new NameValuePair("token", token_user1) };
+		NameValuePair[] TokenUser2 = { new NameValuePair("token", token_user2) };
+		System.out.println(POST("logout", TokenUser1, ""));
+		System.out.println(POST("logout", TokenUser2, ""));
+		token_user1 = Log_in_SignUp("login", User1);
+		token_user2 = Log_in_SignUp("login", User2);
+		
+		System.out.println("Fake User:  " + Log_in_SignUp("login", Fake_User));
+
 
 		/* Lobby */
 
-		/*
-		 * System.out.println("Lobby");
-		 * 
-		 * //New Game Lobby NameValuePair [] NewGameLobby= {new
-		 * NameValuePair("playerNumber","2")};
-		 * System.out.println(" New Game lobby / True: "+
-		 * POST("new_game_lobby",NewGameLobby,"",201));
-		 * System.out.println(" New Game lobby /False: "+
-		 * POST("new_game_lobby",empty,"",400));
-		 * 
-		 * 
-		 * //joinGameLobby NameValuePair [] GameID= {new
-		 * NameValuePair("GameID",GetGameID(""))};
-		 * System.out.println(" joinGameLobby /True : "+
-		 * PUT("joinGameLobby",GameID,token_user1,200));// Should get GameID as
-		 * parameter System.out.println(" joinGameLobby /True : "+
-		 * PUT("joinGameLobby",GameID,token_user2,200));// Should get GameID as
-		 * parameter //setSeed NameValuePair [] seed= {new NameValuePair("seed","0")};
-		 * System.out.println(" setSeed /True : "+ PUT("setSeed",seed,"",200));
-		 * 
-		 * //unReady System.out.println(" setSeed /True : "+
-		 * PUT("unReady",empty,token_user1,400));
-		 * System.out.println(" setSeed /True : "+
-		 * PUT("unReady",empty,token_user2,400)); //Ready
-		 * System.out.println(" setSeed /True : "+ PUT("Ready",empty,token_user1,200));
-		 * System.out.println(" setSeed /True : "+ PUT("Ready",empty,token_user2,200));
-		 * // Unready user1 System.out.println(" setSeed /True : "+
-		 * PUT("unReady",empty,token_user1,400)); //Ready User1
-		 * System.out.println(" setSeed /True : "+ PUT("Ready",empty,token_user1,200));
-		 * 
-		 * //getGameList // System.out.println(" getGameList /True : "+
-		 * Get("get_game_list",empty,"",200));
-		 * 
-		 */
+		System.out.println("**********************************Lobby**************************************");
+
+		// New Game Lobby
+		NameValuePair[] NewGameLobby = { new NameValuePair("playerNumber", "2") };
+		System.out.println(" New Game lobby / True: " +POST("new_game_lobby", NewGameLobby, ""));
+		System.out.println(" New Game lobby /False: " +POST("new_game_lobby", empty, ""));
+
+		// joinGameLobby
+		String GameId =GetGameID(empty);
+		NameValuePair[] GameID = { new NameValuePair("GameID",GameId) };
+		
+		System.out.println(" joinGameLobby /True : " +PUT("joinGameLobby", GameID, token_user1));
+
+		System.out.println(" joinGameLobby /True : " + PUT("joinGameLobby", GameID, token_user2));
+
+		// setSeed
+		NameValuePair[] seed = { new NameValuePair("seed", "0") };
+		System.out.println(" setSeed /True : " + PUT("setSeed", seed, ""));
+
+		// Ready
+		System.out.println(" Ready /True : " + PUT("Ready", empty, token_user1));
+		System.out.println(" Ready /True : " + PUT("Ready", empty, token_user2));
+		// Unready user1
+		System.out.println(" Unready user1 /True : " + PUT("unReady", empty, token_user1)); 
+		// Ready User1
+		System.out.println(" ready user1 /True : " + PUT("Ready", empty, token_user1));
+
+		// getGameList //
+		System.out.println(" getGameList /True : " + Get("get_game_list", empty, "", 200));
 
 		/* Game Engine */
-		System.out.println("Game Engine");
+		System.out.println("**********************************Game Engine **************************************");
 
 		// First player
 		// first player
@@ -466,7 +477,7 @@ public class TEST {
 				new NameValuePair("type", "RANGED"), new NameValuePair("baseID", Integer.toString(BaseIDBob)),
 				new NameValuePair("username", "Bob") };
 		System.out.println("Create unit : "
-				+ PUT("https://gameengine-dot-training-project-lab.appspot.com/create_unit", CreateUnit, "", 200));
+				+ PUT("/create_unit", CreateUnit, ""));
 		// getMoves
 		ArrayList<Integer> UnitIDBob = GetUnitId("Bob");
 		System.out.println(UnitIDBob);
@@ -480,12 +491,12 @@ public class TEST {
 				new NameValuePair("yCoord", Integer.toString(getMoves.getJSONObject(0).getInt("yCoordinate"))),
 				new NameValuePair("unitID", Integer.toString(UnitIDBob.get(0))), new NameValuePair("username", "Bob") };
 		System.out.println(
-				"Move : " + PUT("https://gameengine-dot-training-project-lab.appspot.com/move", move, "", 200));
+				"Move : " + PUT("move", move, ""));
 
 		// End turn First player
 		NameValuePair[] endturnBob = { new NameValuePair("username", "Bob") };
 		System.out.println("Endturn : "
-				+ PUT("https://gameengine-dot-training-project-lab.appspot.com/end_turn", endturnBob, "", 200));
+				+ PUT("end_turn", endturnBob, ""));
 
 		// end first player
 
@@ -504,7 +515,7 @@ public class TEST {
 				new NameValuePair("type", "MELEE"), new NameValuePair("baseID", Integer.toString(BaseIDAlice)),
 				new NameValuePair("username", "Alice") };
 		System.out.println("Create unit : "
-				+ PUT("https://gameengine-dot-training-project-lab.appspot.com/create_unit", CreateUnit1, "", 200));
+				+ PUT("create_unit", CreateUnit1, ""));
 
 		// getAttack
 		ArrayList<Integer> UnitIDAlice = GetUnitId("Alice");
@@ -522,12 +533,12 @@ public class TEST {
 				new NameValuePair("unitID", Integer.toString(UnitIDAlice.get(0))),
 				new NameValuePair("username", "Alice") };
 		System.out.println("Attack : "
-				+ PUT("https://gameengine-dot-training-project-lab.appspot.com/attack", AttackAlice, "", 200));
+				+ PUT("attack", AttackAlice, ""));
 
 		// End turn second player
 		NameValuePair[] endturnAlice = { new NameValuePair("username", "Alice") };
 		System.out.println("Endturn : "
-				+ PUT("https://gameengine-dot-training-project-lab.appspot.com/end_turn", endturnAlice, "", 200));
+				+ PUT("end_turn", endturnAlice, ""));
 
 		// BOB ATTACK
 		NameValuePair[] getAttackBob = { new NameValuePair("username", "Bob"),
@@ -540,15 +551,27 @@ public class TEST {
 				new NameValuePair("yCoord", Integer.toString(getAttackbob.getJSONObject(0).getInt("yCoordinate"))),
 				new NameValuePair("unitID", Integer.toString(UnitIDBob.get(0))), new NameValuePair("username", "Bob") };
 		System.out.println("Attack : "
-				+ PUT("https://gameengine-dot-training-project-lab.appspot.com/attack", AttackBob, "", 200));
+				+ PUT("attack", AttackBob, ""));
 
 //End turn Bob
 		System.out.println("Endturn : "
-				+ PUT("https://gameengine-dot-training-project-lab.appspot.com/end_turn", endturnBob, "", 200));
+				+ PUT("end_turn", endturnBob, ""));
 
 // Alice ATTACK 
 		System.out.println("Attack : "
-				+ PUT("https://gameengine-dot-training-project-lab.appspot.com/attack", AttackAlice, "", 200));
+				+ PUT("attack", AttackAlice, ""));
 
+	
+	
+	
+		
+		NameValuePair[] DeleteUser1 = { new NameValuePair("email", "Houssam_mahdi_98@hotmail.com"),
+				new NameValuePair("password", "123456789") };
+		System.out
+				.println(DELETE("https://security-dot-training-project-lab.appspot.com/deleteaccount", DeleteUser1, ""));
+	
+	
 	}
+	
+	
 }
