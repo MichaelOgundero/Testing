@@ -15,7 +15,7 @@ import java.util.Scanner;
 public class TEST {
 	private static String url = "https://training-project-lab.appspot.com/";
 
-	public static String Log_in_SignUp(String route, NameValuePair[] data)
+	public static String Log_in_SignUp(String route, NameValuePair[] data,int expectedStatus)
 			throws JSONException, IOException {
 		// Create an instance of HttpClient.
 		HttpClient client = new HttpClient();
@@ -28,8 +28,9 @@ public class TEST {
 			int statusCode = client.executeMethod(post);
 			System.out.println(route  + " Expected=" + 200 + " Status code :" + statusCode);
 			// Read the response body.
-			if(statusCode==200) {
+			if(statusCode==expectedStatus) {
 			String responseBody = post.getResponseBodyAsString();
+			System.out.println(responseBody);
 			JSONObject object = new JSONObject(responseBody);
 			String loc = object.getString("token");
 			System.out.println(route +" : succeeded");
@@ -77,6 +78,18 @@ public class TEST {
 			String json = new String(responseBody);
 			JSONObject object = new JSONObject(json);
 			JSONArray array = object.getJSONArray("ListGameLobby");
+			int GameLobby;
+			for (int i=0;i<array.length();i++)
+			{
+				JSONArray a= array.getJSONObject(i).getJSONArray("users");
+				for(int j=0;j<a.length();j++)
+				{ String username =a.getJSONObject(j).getString("username");
+					if(username.equals(Token))
+					{GameLobby=a.getJSONObject(j).getInt("GameLobby");
+					return Integer.toString(GameLobby);}
+					
+				}
+			}
 			return Integer.toString(array.getJSONObject(0).getInt("GameID"));
 			// https://stackoverflow.com/questions/1568762/accessing-members-of-items-in-a-jsonarray-with-java
 
@@ -112,8 +125,8 @@ public class TEST {
 			int statusCode = client.executeMethod(post);
 			System.out.println(route  + " Expected=" + 200 + " Status code :" + statusCode);
 			if (statusCode == expectedStatus)
-				System.out.println(route+ " : succeed");
-				result = true;
+				{System.out.println(route+ " : succeed");
+				result = true;}
 		} catch (HttpException e) {
 			// TODO Auto-generated catch block
 			// e.printStackTrace();
@@ -150,8 +163,8 @@ public class TEST {
 			int statusCode = client.executeMethod(put);
 			System.out.println(route + "Status code :" + statusCode);
 			if (statusCode == expectedStatus)
-				System.out.println(route+ " : succeed");
-				result = true;
+				{System.out.println(route+ " : succeed");
+				result = true;}
 		} catch (HttpException e) {
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
@@ -188,8 +201,8 @@ public class TEST {
 			int statusCode = client.executeMethod(method);
 			System.out.println(route + " Status code :" + statusCode);
 			if (statusCode == expectedStatusCode)
-				System.out.println(route+ " : succeed");
-			result = true;
+				{System.out.println(route+ " : succeed");
+			result = true;}
 
 		} catch (HttpException e) {
 			// TODO Auto-generated catch block
@@ -402,76 +415,69 @@ public class TEST {
 		String token_user1;
 		String token_user2;
 		NameValuePair[] User1 = { new NameValuePair("name", "mahdi"), new NameValuePair("lastName", "karray"),
-				new NameValuePair("email", "karraymahdi"), new NameValuePair("password", "123456789")
-
+				new NameValuePair("email", "karraymahdi1"), new NameValuePair("password", "123456789")
 		};
 		NameValuePair[] User2 = { new NameValuePair("name", "houssam"), new NameValuePair("lastName", "mahdi"),
-				new NameValuePair("email", "Houssam_mahdi"), new NameValuePair("password", "123456789")
+				new NameValuePair("email", "Houssam_mahdi1"), new NameValuePair("password", "123456789")
 		};
-		NameValuePair[] Fake_User = { new NameValuePair("email", "Houssam_mahdi_98@gmail.com"),
+		NameValuePair[] Fake_User = { new NameValuePair("email","Houssam_mahdi_98@gmail.com"),
 				new NameValuePair("password", "987654321") };
 
 		System.out.println("********signUp********");
-		token_user1 = Log_in_SignUp("signUp", User1);
-		token_user2 = Log_in_SignUp("signUp", User2);
+		token_user1 = Log_in_SignUp("signUp", User1,200);
+		token_user2 = Log_in_SignUp("signUp", User2,200);
 		
 		System.out.println("********logOut********");
+		NameValuePair[] TokenUser1_SignUp = { new NameValuePair("token", token_user1) };
+		NameValuePair[] TokenUser2_SignUp = { new NameValuePair("token", token_user2) };
 	
-		System.out.println(POST("logOut",empty, token_user1, 200));
-		System.out.println(POST("logOut",empty, token_user2, 200));
+		System.out.println(POST("logOut",TokenUser1_SignUp, "", 200));
+		System.out.println(POST("logOut",TokenUser2_SignUp, "", 200));
 		
-		NameValuePair[] User_1_1 = {	new NameValuePair("email", "karraymahdi"), new NameValuePair("password", "123456789")};
-		NameValuePair[] User_2_2 = {	new NameValuePair("email", "Houssam_mahdi"), new NameValuePair("password", "123456789")};
+		NameValuePair[] User_1_1 = {	new NameValuePair("email", "karraymahdi1"), new NameValuePair("password", "123456789")};
+		NameValuePair[] User_2_2 = {	new NameValuePair("email", "Houssam_mahdi1"), new NameValuePair("password", "123456789")};
 		System.out.println("********logIn********");
-		token_user1 = Log_in_SignUp("logIn", User_1_1);
-		token_user2 = Log_in_SignUp("logIn", User_2_2);
+		token_user1 = Log_in_SignUp("logIn", User_1_1,200);
+		token_user2 = Log_in_SignUp("logIn", User_2_2,200);
 		
-		System.out.println("Fake User:  " + Log_in_SignUp("logIn", Fake_User));
+		System.out.println("Fake User:  " + Log_in_SignUp("logIn", Fake_User,400));
 		NameValuePair[] TokenUser1 = { new NameValuePair("token", token_user1) };
 		NameValuePair[] TokenUser2 = { new NameValuePair("token", token_user2) };
-
 		/* Lobby */
-
 		System.out.println("**********************************Lobby**************************************");
-
 		// New Game Lobby
 		System.out.println("********New Game Lobby********");
 		NameValuePair[] NewGameLobby = { new NameValuePair("playerNumber", "2") };
-		System.out.println(" New Game lobby / True: " +POST("newGameLobby", NewGameLobby,token_user1,201));
-	
+		System.out.println(" New Game lobby / True: " +POST("newGameLobby", NewGameLobby,token_user1,200));
 		System.out.println("********joinGameLobby********");
 		// joinGameLobby
-		String GameId =GetGameID("");
+		String GameId =GetGameID("karraymahdi1");
 		NameValuePair[] GameID = { new NameValuePair("GameID",GameId) };
-		
 		System.out.println(" joinGameLobby /True (Player 1) : " +PUT("joinGameLobby", GameID, token_user1,200));
-
 		System.out.println(" joinGameLobby /True (Player 2): " + PUT("joinGameLobby", GameID, token_user2,200));
-		System.out.println("********setSeed********");
 		// setSeed
+		System.out.println("********setSeed********");
 		NameValuePair[] seed = { new NameValuePair("seed", "0") };
 		System.out.println(" setSeed /True : " + PUT("setSeed", seed, token_user1,200));
 		System.out.println("********Ready********");
 		// Ready
 		System.out.println(" Ready /True : " + PUT("Ready", empty, token_user1,200));
-		System.out.println(" Ready /True : " + PUT("Ready", empty, token_user2,200));
 		System.out.println("********UnReady********");
 		// Unready user1
 		System.out.println(" Unready user1 /True : " + PUT("unReady", empty, token_user1,200)); 
 		System.out.println("********Ready********");
 		// Ready User1
 		System.out.println(" ready user1 /True : " + PUT("Ready", empty, token_user1,200));
+		System.out.println(" Ready user 2  /True : " + PUT("Ready", empty, token_user2,200));
 		System.out.println("********getGameList********");
 		// getGameList //
-		System.out.println(" getGameList /True : " + Get("getGameList", empty, token_user1, 200));
+		//System.out.println(" getGameList /True : " + Get("getGameList", empty, token_user1, 200));
 
 		/* Game Engine */
 		System.out.println("**********************************Game Engine **************************************");
-
 		// First player
-		// first player
 		System.out.println("***************FIRST PLAYER ***************");
-		int BaseIDBob = (GetBaseID("karraymahdi"));
+		int BaseIDBob = (GetBaseID("karraymahdi1"));
 		// Get Placement
 		NameValuePair[] getplacment = {
 				new NameValuePair("baseID", Integer.toString(BaseIDBob)) };
@@ -515,7 +521,7 @@ public class TEST {
 		// second player
 		System.out.println("*************** Second Player *******************");
 		System.out.println("********GetBaseID********");
-		int BaseIDAlice = (GetBaseID("Houssam_mahdi"));
+		int BaseIDAlice = (GetBaseID("Houssam_mahdi1"));
 		// Get Placement
 		NameValuePair[] getplacmentAlice = { 
 				new NameValuePair("baseID", Integer.toString(BaseIDAlice)) };
@@ -534,7 +540,7 @@ public class TEST {
 
 		// getAttack
 		System.out.println("********GetUnitId********");
-		ArrayList<Integer> UnitIDAlice = GetUnitId("Houssam_mahdi");
+		ArrayList<Integer> UnitIDAlice = GetUnitId("Houssam_mahdi1");
 		System.out.println("unit id = " + UnitIDAlice);
 
 		NameValuePair[] getmovesAlice = {
@@ -555,7 +561,7 @@ public class TEST {
 
 		// End turn second player
 		
-		NameValuePair[] endturnAlice = { new NameValuePair("username", "Houssam_mahdi") };
+		NameValuePair[] endturnAlice = { new NameValuePair("username", "Houssam_mahdi1") };
 		System.out.println("********Endturn********");
 		System.out.println("Endturn : "
 				+ PUT("end_turn", empty, token_user2,200));
@@ -584,11 +590,7 @@ public class TEST {
 		System.out.println("********Attack********");
 		System.out.println("Attack : "
 				+ PUT("attack", AttackAlice, token_user2,200));
-
 	
-	
-	
-		
 		NameValuePair[] DeleteUser1 = { new NameValuePair("email", "Houssam_mahdi_98@hotmail.com"),
 			 };
 		System.out.println(DELETE("https://security-dot-training-project-lab.appspot.com/deleteaccount", DeleteUser1, "",200));
