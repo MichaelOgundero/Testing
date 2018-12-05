@@ -1,4 +1,6 @@
 package Package;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.commons.httpclient.*;
 import org.json.JSONArray;
@@ -57,6 +59,7 @@ public class TEST {
 	}
 
 	public static String GetGameID(String Token) throws JSONException {// Create an instance of HttpClient.
+		
 		HttpClient client = new HttpClient();
 		// Create a method instance.
 		GetMethod method = new GetMethod("https://training-project-lab.appspot.com/getGameList");
@@ -276,6 +279,7 @@ public class TEST {
 			// Read the response body.
 			if (statusCode == expectedStatus) {
 				String responseBody = method.getResponseBodyAsString();
+				System.out.println(responseBody);
 
 				// Deal with the response.
 				// Use caution: ensure correct character encoding and is not binary data
@@ -314,11 +318,11 @@ public class TEST {
 		NameValuePair[] data = { new NameValuePair("username", Username) };
 		HttpClient client = new HttpClient();
 		// Create a method instance.
-		GetMethod method = new GetMethod(url+"get_state");
+		GetMethod method = new GetMethod("https://gameengine-dot-training-project-lab.appspot.com/get_state");
 		method.setQueryString(data);
 		// Provide custom retry handler is necessary
 		client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
-		// method.setRequestHeader("Authorization", "Bearer " + Token);
+		// method.setRequestHeader("Authorization", "Bearer " + Username);
 		try {
 			// Execute the method.
 			int statusCode = client.executeMethod(method);
@@ -361,11 +365,11 @@ public class TEST {
 		NameValuePair[] data = { new NameValuePair("username", Username) };
 		HttpClient client = new HttpClient();
 		// Create a method instance.
-		GetMethod method = new GetMethod(url+"getState");
+		GetMethod method = new GetMethod("https://gameengine-dot-training-project-lab.appspot.com/get_state");
 		method.setQueryString(data);
 		// Provide custom retry handler is necessary
 		client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
-		// method.setRequestHeader("Authorization", "Bearer " + Token);
+		//method.setRequestHeader("Authorization", "Bearer " + Username);
 		try {
 			// Execute the method.
 			int statusCode = client.executeMethod(method);
@@ -477,6 +481,13 @@ public class TEST {
 		System.out.println("**********************************Game Engine **************************************");
 		// First player
 		System.out.println("***************FIRST PLAYER ***************");
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			  @Override
+			  public void run() {
+			    // Your database code here
+			  }
+			},6000);
 		int BaseIDBob = (GetBaseID("karraymahdi1"));
 		// Get Placement
 		NameValuePair[] getplacment = {
@@ -484,17 +495,20 @@ public class TEST {
 		System.out.println("********getPlacement********");
 		JSONArray placement = GetMoves_Attacks_Placement("getPlacement",token_user1, "positions", getplacment,200);
 		System.out.println(placement);
+		
+		
 		NameValuePair[] CreateUnit = {
 				new NameValuePair("xCoord", Integer.toString(placement.getJSONObject(0).getInt("xCoordinate"))),
 				new NameValuePair("yCoord", Integer.toString(placement.getJSONObject(0).getInt("yCoordinate"))),
-				new NameValuePair("type", "RANGED"), new NameValuePair("baseID", Integer.toString(BaseIDBob)),
-				new NameValuePair("username", "Bob") };
+				new NameValuePair("type", "RANGED"), new NameValuePair("baseID", Integer.toString(BaseIDBob)) };
+		
+		
 		System.out.println("********Create unit********");
 		System.out.println("Create unit : "
 				+ PUT("createUnit", CreateUnit, token_user1,200));
 		// getMoves
 		System.out.println("********GetUnitId********");
-		ArrayList<Integer> UnitIDBob = GetUnitId("karraymahdi");
+		ArrayList<Integer> UnitIDBob = GetUnitId("karraymahdi1");
 		System.out.println(UnitIDBob);
 		NameValuePair[] getmoves = { 
 				new NameValuePair("unitID", Integer.toString(UnitIDBob.get(0))) };
@@ -511,10 +525,10 @@ public class TEST {
 				"Move : " + PUT("move", move, token_user1,200));
 
 		// End turn First player
-		NameValuePair[] endturnBob = { new NameValuePair("username", "Bob") };
+		NameValuePair[] endturnBob = { new NameValuePair("username", "karraymahdi") };
 		System.out.println("********Endturn********");
 		System.out.println("Endturn : "
-				+ PUT("end_turn", empty, token_user1,200));
+				+ PUT("endTurn", empty, token_user1,200));
 
 		// end first player
 
@@ -564,7 +578,7 @@ public class TEST {
 		NameValuePair[] endturnAlice = { new NameValuePair("username", "Houssam_mahdi1") };
 		System.out.println("********Endturn********");
 		System.out.println("Endturn : "
-				+ PUT("end_turn", empty, token_user2,200));
+				+ PUT("endTurn", empty, token_user2,200));
 		System.out.println("***************FIRST PLAYER ***************");
 		// BOB ATTACK
 		NameValuePair[] getAttackBob = { 
@@ -584,8 +598,10 @@ public class TEST {
 //End turn Bob
 		System.out.println("********Endturn********");
 		System.out.println("Endturn : "
-				+ PUT("end_turn", endturnBob,token_user1,200));
-		System.out.println("***************Second PLAYER ***************");
+				+ PUT("endTurn", endturnBob,token_user1,200));
+//System.out.println("***************Second PLAYER ***************");
+		
+		/*
 // Alice ATTACK 
 		System.out.println("********Attack********");
 		System.out.println("Attack : "
@@ -595,7 +611,7 @@ public class TEST {
 			 };
 		System.out.println(DELETE("https://security-dot-training-project-lab.appspot.com/deleteaccount", DeleteUser1, "",200));
 	
-	
+	*/
 	}
 	
 	
