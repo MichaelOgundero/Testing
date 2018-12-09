@@ -94,7 +94,7 @@ public class TEST {
 				}
 			}
 			return Integer.toString(array.getJSONObject(0).getInt("GameID"));
-			// https://stackoverflow.com/questions/1568762/accessing-members-of-items-in-a-jsonarray-with-java
+			
 
 		} catch (HttpException e) {
 			// TODO Auto-generated catch block
